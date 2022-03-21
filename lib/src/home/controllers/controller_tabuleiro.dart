@@ -7,16 +7,55 @@ class ControllerTabuleiro extends ChangeNotifier {
     ['', '', '']
   ];
 
-  String jogadorVez = 'X';
+  String _nomeJogador1 = 'X';
+  String _nomeJogador2 = 'O';
+  String _jogadorVez = 'X';
   bool jogoFinalizado = false;
-  int pontosJogadorX = 0;
-  int pontosJogadorO = 0;
-  String ganhadorRodada = '';
+  int _pontosJogador1 = 0;
+  int _pontosJogador2 = 0;
+  int _rodada = 0;
+  String _ganhadorRodada = '';
+
+  String get ganhadorRodada => _ganhadorRodada;
+
+  String get jogadorVez => _jogadorVez;
+
+  String get nomeJogador1 => _nomeJogador1;
+
+  String get nomeJogador2 => _nomeJogador2;
+
+  int get pontosJogador1 => _pontosJogador1;
+
+  int get pontosJogador2 => _pontosJogador2;
+
+  set ganhadorRodada(nomeGanhador) => _ganhadorRodada = nomeGanhador;
+
+  set jogadorVez(proximoJogador) => _jogadorVez = proximoJogador;
+
+  set nomeJogador1(nome) => _nomeJogador1 = nome.toString().toUpperCase();
+
+  set nomeJogador2(nome) => _nomeJogador2 = nome.toString().toUpperCase();
+
+  String nomeJogadorVez() {
+    if (jogadorVez == 'X') {
+      return _nomeJogador1;
+    }
+    return _nomeJogador2;
+  }
+
+  void setarNomesJogadores(String nomeJogador1param, String nomeJogador2param, context) {
+    if (nomeJogador1param.isNotEmpty && nomeJogador2param.isNotEmpty) {
+      nomeJogador1 = nomeJogador1param;
+      nomeJogador2 = nomeJogador2param;
+    }
+    notifyListeners();
+    Navigator.pop(context);
+  }
 
   void setarJogada(int linha, int coluna) {
-    if (matrizTabuleiro[linha][coluna] == '' && !jogoFinalizado) {
+    if (matrizTabuleiro[linha][coluna].isEmpty && !jogoFinalizado) {
       matrizTabuleiro[linha][coluna] = jogadorVez;
-      matrizTabuleiro[linha][coluna] = jogadorVez;
+      _rodada++;
       verificarGanhador();
       if (jogadorVez == 'X') {
         jogadorVez = 'O';
@@ -31,25 +70,28 @@ class ControllerTabuleiro extends ChangeNotifier {
     verificarColunas();
     verificarLinhas();
     verificarDiagonais();
+
     if (jogoFinalizado) {
       if (jogadorVez == 'X') {
-        ganhadorRodada = 'X';
-        pontosJogadorX++;
+        ganhadorRodada = nomeJogador1;
+        _pontosJogador1++;
       } else {
-        ganhadorRodada = 'O';
-        pontosJogadorO++;
+        ganhadorRodada = nomeJogador2;
+        _pontosJogador2++;
       }
+    }
+    if (_rodada == 9 && !jogoFinalizado) {
+      jogoFinalizado = true;
+      ganhadorRodada = 'EMPATE';
     }
   }
 
   void verificarLinhas() {
-    List linha1 = matrizTabuleiro[0];
-    List linha2 = matrizTabuleiro[1];
-    List linha3 = matrizTabuleiro[2];
+    bool linha1 = matrizTabuleiro[0].every((element) => element == jogadorVez);
+    bool linha2 = matrizTabuleiro[1].every((element) => element == jogadorVez);
+    bool linha3 = matrizTabuleiro[2].every((element) => element == jogadorVez);
 
-    if (linha1.every((e) => e == jogadorVez) ||
-        linha2.every((e) => e == jogadorVez) ||
-        linha3.every((e) => e == jogadorVez)) {
+    if (linha1 || linha2 || linha3) {
       jogoFinalizado = true;
     }
   }
@@ -89,8 +131,8 @@ class ControllerTabuleiro extends ChangeNotifier {
   }
 
   void zerarPontuacao(context) {
-    pontosJogadorO = 0;
-    pontosJogadorX = 0;
+    _pontosJogador2 = 0;
+    _pontosJogador1 = 0;
     notifyListeners();
     Navigator.pop(context);
   }
@@ -98,6 +140,8 @@ class ControllerTabuleiro extends ChangeNotifier {
   void novoJogo() {
     zerarMatriz();
     jogoFinalizado = false;
+    _rodada = 0;
+    ganhadorRodada = '';
     notifyListeners();
   }
 

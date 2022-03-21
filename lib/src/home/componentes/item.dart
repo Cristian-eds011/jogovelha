@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:jogovelha/src/home/controllers/controller_tabuleiro.dart';
 
 class Item extends StatefulWidget {
-  Item({this.linha, this.coluna, required this.controller}) : super();
+  const Item({Key? key,this.linha, this.coluna, required this.controller}) : super(key: key);
 
-  int? linha;
-  int? coluna;
-  ControllerTabuleiro controller;
+  final int? linha;
+  final int? coluna;
+  final ControllerTabuleiro controller;
 
   @override
   State<Item> createState() => _ItemState();
@@ -38,7 +38,7 @@ class _ItemState extends State<Item> {
             ),
           ),
           margin: const EdgeInsets.all(8),
-          color: Colors.amber,
+          color: Theme.of(context).colorScheme.secondary,
         ),
       ),
     );
